@@ -58,7 +58,7 @@ def loss(y_true, y_pred):
     index_class = cfg.box_per_grid * (4 + 1)
 
     pred_confidence = tf.reshape(y_pred[:, :, :, :index_confidence], [-1, cfg.grid_size, cfg.grid_size, cfg.box_per_grid])
-    pred_box_grid = tf.reshape(y_pred[:, :, :, index_confidence:index_class], [-1, cfg.grid_size, cfg.grid_size, cfg.box_per_grid, 4])
+    pred_box = tf.reshape(y_pred[:, :, :, index_confidence:index_class], [-1, cfg.grid_size, cfg.grid_size, cfg.box_per_grid, 4])
     pred_class = tf.reshape(y_pred[:, :, :, index_class:], [-1, cfg.grid_size, cfg.grid_size, cfg.object_class_num])
 
     true_object = tf.reshape(y_true[:, :, :, 0], [-1, cfg.grid_size, cfg.grid_size, 1])
@@ -69,6 +69,12 @@ def loss(y_true, y_pred):
     offset = np.transpose(np.reshape(np.array([np.arange(cfg.grid_size)] * cfg.grid_size * cfg.box_per_grid), (cfg.box_per_grid, cfg.grid_size, cfg.grid_size)), (1, 2, 0))
     offset = tf.constant(offset, dtype=tf.float32)
     offset = tf.reshape(offset, [1, cfg.grid_size, cfg.grid_size, cfg.box_per_grid])
+
+    pred_box_grid = tf.stack([pred_box[:, :, :, :, 0],
+                                pred_box[:, :, :, :, 1],
+                                tf.sqrt(pred_box[:, :, :, :, 2]),
+                                tf.sqrt(pred_box[:, :, :, :, 3])])
+    pred_box_grid = tf.transpose(pred_box_grid, [1, 2, 3, 4, 0])
 
     pred_box_image = tf.stack([(pred_box_grid[:, :, :, :, 0] + offset) / cfg.grid_size,
                                 (pred_box_grid[:, :, :, :, 1] + tf.transpose(offset, (0, 2, 1, 3))) / cfg.grid_size,

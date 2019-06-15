@@ -51,11 +51,17 @@ def main():
     pred_output = yolo_model.predict(expand_np_image)[0]
 
     pred_confidence = np.reshape(pred_output[:, :, :3], [cfg.grid_size, cfg.grid_size, cfg.box_per_grid])
-    pred_box_grid = np.reshape(pred_output[:, :, 3:15], [cfg.grid_size, cfg.grid_size, cfg.box_per_grid, 4])
+    pred_box = np.reshape(pred_output[:, :, 3:15], [cfg.grid_size, cfg.grid_size, cfg.box_per_grid, 4])
     pred_class = np.reshape(pred_output[:, :, 15:], [cfg.grid_size, cfg.grid_size, cfg.object_class_num])
 
     offset = np.transpose(np.reshape(np.array([np.arange(cfg.grid_size)] * cfg.grid_size * cfg.box_per_grid), (cfg.box_per_grid, cfg.grid_size, cfg.grid_size)), (1, 2, 0))
     offset = np.reshape(offset, [cfg.grid_size, cfg.grid_size, cfg.box_per_grid])
+
+    pred_box_grid = np.stack([pred_box[:, :, :, 0],
+                                pred_box[:, :, :, 1],
+                                np.sqrt(pred_box[:, :, :, 2]),
+                                np.sqrt(pred_box[:, :, :, 3])])
+    pred_box_grid = np.transpose(pred_box_grid, [1, 2, 3, 0])
 
     pred_box_image = np.stack([(pred_box_grid[:, :, :, 0] + offset) / cfg.grid_size,
                                 (pred_box_grid[:, :, :, 1] + np.transpose(offset, (1, 0, 2))) / cfg.grid_size,

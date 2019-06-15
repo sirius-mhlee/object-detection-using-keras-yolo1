@@ -16,7 +16,7 @@ def main():
     output_model_path = sys.argv[3]
 
     yolo_model = yn.create_model()
-    adam_optimizer = kr.optimizers.Adam(lr=cfg.learning_rate, clipnorm=0.001)
+    adam_optimizer = kr.optimizers.Adam(lr=cfg.learning_rate, beta_1=0.9, beta_2=0.999)
 
     yolo_model.compile(loss=yl.loss, optimizer=adam_optimizer)
     yolo_model.summary()
