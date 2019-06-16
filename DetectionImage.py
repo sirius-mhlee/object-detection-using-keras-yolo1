@@ -34,7 +34,7 @@ def generate_image(label_file_path, image, nms_bbox_list):
         cv2.rectangle(save_image, (left, top), (right, bottom), color[bbox.get_class()], 2)
 
         text_size, baseline = cv2.getTextSize(' ' + label_list[bbox.get_class()] + ' ', cv2.FONT_HERSHEY_SIMPLEX, 1, 2)
-        cv2.rectangle(save_image, (left, top - text_size[1] - (baseline * 2)), (left + text_size[0], top), color[bbox.get_class()], -1)
+        cv2.rectangle(save_image, (left - 1, top - text_size[1] - (baseline * 2)), (left + text_size[0], top), color[bbox.get_class()], -1)
         cv2.putText(save_image, ' ' + label_list[bbox.get_class()] + ' ', (left, top - baseline), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
 
     return save_image

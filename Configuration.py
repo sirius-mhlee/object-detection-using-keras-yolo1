@@ -11,7 +11,7 @@ coord_lambda = 5
 no_object_lambda = 0.5
 
 learning_rate = 1e-4
-epochs = 10
+epochs = 20
 batch_size = 1
 
 nms_threshold = 0.3
